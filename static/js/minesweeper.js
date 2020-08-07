@@ -51,8 +51,8 @@ function generateMinesweeper(dif){
   }
 
   //PRINT FIELD
-  console.log("FIELD");
-  console.log(field);
+  // console.log("FIELD");
+  // console.log(field);
 
 
 
