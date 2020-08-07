@@ -7,7 +7,7 @@
     <link rel="shortcut icon" href="static/img/favicon.ico">
     <title>iMinesweeper</title>
   </head>
-  <body onload="generateMinesweeper(); placeField();">
+  <body onload="generateMinesweeper(0); placeField();">
     <header>iMinesweeper</header>
     <div class="navbar">
       <div id="settings">
@@ -25,9 +25,9 @@
       </div>
       <div id="difficulty">
         <ul>
-          <li><button class="active" id="10x10" onclick="insertPuzzle(0); difficulty(0);">10x10</button></li>
-          <li><button id="20x20" onclick="insertPuzzle(1); difficulty(1);">20x20</button></li>
-          <li><button id="50x50" onclick="insertPuzzle(2); difficulty(2);">50x50</button></li>
+          <li><button class="active" id="10x10" onclick="generateMinesweeper(0); difficulty(0);">10x10</button></li>
+          <li><button id="20x20" onclick="generateMinesweeper(1); difficulty(1);">20x20</button></li>
+          <li><button id="40x40" onclick="generateMinesweeper(2); difficulty(2);">40x40</button></li>
         </ul>
       </div>
       <div id="mines_left">
