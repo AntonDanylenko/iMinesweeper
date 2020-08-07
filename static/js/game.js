@@ -30,6 +30,11 @@ var open_tile_path = 'static/img/open_tile.png';
 var open_tile = new Image();
 open_tile.src = open_tile_path;
 
+//RED TILE ICON
+var red_tile_path = 'static/img/red_tile.png';
+var red_tile = new Image();
+red_tile.src = red_tile_path;
+
 //MINE ICON
 var mine_path = 'static/img/mine.png';
 var mine = new Image();
@@ -122,7 +127,7 @@ document.addEventListener('click', function(event) {
         }
         else {
           console.log("OPEN MINES");
-          // openMines(row, col);
+          openMines(row, col);
         }
       }
     }
@@ -181,6 +186,21 @@ function openArea(row, col){
   }
 }
 
+
+//OPEN ALL MINES, GAME OVER
+function openMines(r, c){
+  for (var row=0; row<CELL_ROWS; row++){
+    for (var col=0; col<CELL_COLS; col++){
+      if (board[row][col] == "9"){
+        context.drawImage(open_tile, col*CELL_SIZE, row*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        if (row == r && col == c){
+          context.drawImage(red_tile, c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        }
+        context.drawImage(mine, col*CELL_SIZE, row*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+      }
+    }
+  }
+}
 
 //FIND SECTOR
 function findSectorX(coord, total) {
