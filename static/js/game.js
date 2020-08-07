@@ -40,6 +40,11 @@ var mine_path = 'static/img/mine.png';
 var mine = new Image();
 mine.src = mine_path;
 
+//FLAG ICON
+var flag_path = 'static/img/flag.png';
+var flag = new Image();
+flag.src = flag_path;
+
 //NUMBER COLORS ARRAY
 var num_colors = ["#0000FF", "#008000", "#FF0000", "#00008B", "#800020", "#008080", "#000000", "#808080"];
 
@@ -134,11 +139,11 @@ document.addEventListener('click', function(event) {
     else {
       if (working_board[row][col] == 'X'){
         console.log("PLACE FLAG");
-        // placeFlag(row, col);
+        placeFlag(row, col);
       }
       else if (working_board[row][col] == 'F'){
         console.log("REMOVE FLAG");
-        // removeFlag(row, col);
+        removeFlag(row, col);
       }
     }
   }
@@ -200,7 +205,22 @@ function openMines(r, c){
       }
     }
   }
+  // gameOver();
 }
+
+
+//PLACE FLAG
+function placeFlag(row, col){
+  working_board[row][col] = 'F';
+  context.drawImage(flag, col*CELL_SIZE, row*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+}
+
+//REMOVE FLAG
+function removeFlag(row, col){
+  working_board[row][col] = 'X';
+  context.drawImage(tile, col*CELL_SIZE, row*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+}
+
 
 //FIND SECTOR
 function findSectorX(coord, total) {
