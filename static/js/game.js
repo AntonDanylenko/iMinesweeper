@@ -17,8 +17,23 @@ var CELL_SIZE = context.canvas.width/CELL_COLS;
 var board;
 var working_board;
 
+//UNLOCKED
+var unlocked = true;
+var game_over = false;
+var win = false;
+
+//TIMER
+var timer;
+var t;
+var timer_active = false;
+var boardRef = document.querySelector(".board");
+var pauseRef = document.querySelector(".pauseMenu");
+
 //UTENSIL
 var utensil = 0;
+
+//MINES COUNT
+var num_mines = CELL_TOTAL/10;
 
 //TILE ICON
 var tile_path = 'static/img/tile.png';
@@ -73,6 +88,16 @@ function placeField(){
     }
   }
 
+  timer = 0;
+  clearTimeout(t);
+  timer_active = true;
+  startTimer();
+  closeModal();
+  unlocked = true;
+  game_over = false;
+  boardRef.style.display = "block";
+  document.querySelector(".pauseMenu").style.display = "none";
+
   //Draw the mines and numbers.
   // for (var row=0; row<CELL_ROWS; row++){
   //   for (var col=0; col<CELL_COLS; col++){
@@ -101,11 +126,28 @@ function difficulty(dif){
   CELL_COLS = CELL_ROWS;
   CELL_TOTAL = CELL_ROWS*CELL_COLS;
   CELL_SIZE = context.canvas.width/CELL_COLS;
+  num_mines = CELL_TOTAL/10;
   // console.log("CELL INFO");
   // console.log(CELL_ROWS);
   // console.log(CELL_SIZE);
   placeField();
+  // checkPause();
 }
+
+
+//KEY PRESS EVENT LISTENER
+document.addEventListener('keydown', function(event) {
+  // console.log"KEYPRESS EVENT");
+  key = event.keyCode;
+  // console.log("Key: " + key);
+  if (key==32){
+    // console.log("!utensil: " + !utensil);
+    switchUtensil(!utensil);
+  }
+  else if (key==27) {
+    checkPause();
+  }
+}, false);
 
 
 //CLICK EVENT LISTENER
@@ -113,10 +155,15 @@ document.addEventListener('click', function(event) {
   /* Determines what to do when user clicks inside the board */
   // console.log("CLICK EVENT");
   var rect = canvas.getBoundingClientRect(canvas, event);
+  // console.log(event.clientX);
+  // console.log(event.clientY);
   var mousePos = [event.clientX - rect.left, event.clientY - rect.top];
   // console.log(mousePos);
+  // console.log(unlocked);
   if (mousePos[0]>=0 && mousePos[1]>=0 &&
-      mousePos[0]<=canvas.width && mousePos[1]<=canvas.height){
+      mousePos[0]<=canvas.width && mousePos[1]<=canvas.height &&
+      unlocked && !game_over){
+    // console.log("INSIDE");
     var sectorX = findSectorX(mousePos[0], canvas.width);
     var sectorY = findSectorY(mousePos[1], canvas.height);
     // console.log("selected: "+selected)
@@ -127,22 +174,22 @@ document.addEventListener('click', function(event) {
     if (utensil){
       if (working_board[row][col] == 'X'){
         if (board[row][col] != "9"){
-          console.log("OPEN AREA");
+          // console.log("OPEN AREA");
           openArea(row, col);
         }
         else {
-          console.log("OPEN MINES");
+          // console.log("OPEN MINES");
           openMines(row, col);
         }
       }
     }
     else {
       if (working_board[row][col] == 'X'){
-        console.log("PLACE FLAG");
+        // console.log("PLACE FLAG");
         placeFlag(row, col);
       }
       else if (working_board[row][col] == 'F'){
-        console.log("REMOVE FLAG");
+        // console.log("REMOVE FLAG");
         removeFlag(row, col);
       }
     }
@@ -205,20 +252,39 @@ function openMines(r, c){
       }
     }
   }
-  // gameOver();
+  win = false;
+  gameOver();
 }
 
 
 //PLACE FLAG
-function placeFlag(row, col){
-  working_board[row][col] = 'F';
-  context.drawImage(flag, col*CELL_SIZE, row*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+function placeFlag(r, c){
+  working_board[r][c] = 'F';
+  context.drawImage(flag, c*CELL_SIZE, r*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+  num_mines--;
+  document.getElementById("mines_left").innerHTML = num_mines;
+
+  if (num_mines == 0){
+    win = true;
+    for (var row=0; row<CELL_ROWS; row++){
+      for (var col=0; col<CELL_COLS; col++){
+        if (board[row][col] == "9" && working_board[row][col] != 'F'){
+          win = false;
+        }
+      }
+    }
+    if (win){
+      gameOver();
+    }
+  }
 }
 
 //REMOVE FLAG
 function removeFlag(row, col){
   working_board[row][col] = 'X';
   context.drawImage(tile, col*CELL_SIZE, row*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+  num_mines++;
+  document.getElementById("mines_left").innerHTML = num_mines;
 }
 
 
@@ -248,4 +314,126 @@ function switchUtensil(button) {
     document.getElementById("sweep").className = "";
     document.getElementById("flag").className = "active";
   }
+}
+
+
+//GAME OVER
+function gameOver(){
+  unlocked = false;
+  game_over = true;
+  pauseTimer();
+  openModal();
+}
+
+
+//INCREMENT TIME
+function changeTimer(){
+  document.getElementById("time").innerHTML = displayTime(timer);
+  t = setTimeout(function(){ changeTimer() }, 1000);
+  timer = timer + 1;
+}
+
+//DISPLAY TIME
+function displayTime(calcTime){
+  var hours = Math.floor(calcTime / 3600);
+  calcTime = calcTime % 3600;
+  var minutes = Math.floor(calcTime / 60);
+  calcTime = calcTime % 60;
+  var seconds = Math.floor(calcTime);
+
+  seconds = addZeros(seconds);
+  minutes = addZeros(minutes);
+
+  return `${hours}:${minutes}:${seconds}`
+}
+
+//START TIMER
+function startTimer(){
+  timer_active = true;
+  changeTimer();
+}
+
+//PAUSE TIMER
+function pauseTimer(){
+  clearTimeout(t);
+  timer_active = false;
+}
+
+//OPEN PAUSE MENU
+function checkPause(){
+  // console.log("game_over: " + game_over);
+  if (!game_over){
+    if(timer_active){
+      unlocked = false;
+      pauseTimer();
+      boardRef.style.display = "none";
+      document.querySelector(".pauseMenu").style.display = "block";
+    }
+    else {
+      unlocked = true;
+      startTimer();
+      boardRef.style.display = "block";
+      document.querySelector(".pauseMenu").style.display = "none";
+    }
+  }
+  else {
+    if (document.getElementById("winAlert").style.display == "block"){
+      closeModal();
+    }
+    else {
+      openModal();
+    }
+  }
+}
+
+//ADD ZEROS TO TIME
+function addZeros(i){
+  if(i < 10){
+    i = "0" + i;
+  }
+  return i;
+}
+
+
+//OPEN MODAL
+function openModal(){
+  // console.log("OPEN MODAL");
+  // console.log(unlocked);
+  document.getElementById("winAlert").style.display = "block";
+  if (!win){
+    document.getElementById("heading").innerHTML = "You Lost :(";
+  }
+  document.getElementById("finalTime").innerHTML = "Time: " + displayTime(timer-1);
+  var dif = "10x10";
+  if (document.getElementById("20x20").className == "active"){
+    dif = "20x20";
+  }
+  else if (document.getElementById("40x40").className == "active"){
+    dif = "40x40";
+  }
+  document.getElementById("finalDifficulty").innerHTML = "Difficulty: " + dif;
+}
+
+
+//CLOSE MODAL
+function closeModal(){
+  // console.log("CLOSE MODAL");
+  document.getElementById("winAlert").style.display = "none";
+}
+
+
+//NEW GAME
+function newGame(){
+  // console.log("NEW GAME");
+  // console.log(unlocked);
+  var dif = 0;
+  if (document.getElementById("20x20").className == "active"){
+    dif = 1;
+  }
+  else if (document.getElementById("40x40").className == "active"){
+    dif = 2;
+  }
+  generateMinesweeper(dif);
+  difficulty(dif);
+  checkPause();
 }
