@@ -403,6 +403,9 @@ function openModal(){
   if (!win){
     document.getElementById("heading").innerHTML = "You Lost :(";
   }
+  else {
+    document.getElementById("heading").innerHTML = "YOU WON!!!";
+  }
   document.getElementById("finalTime").innerHTML = "Time: " + displayTime(timer-1);
   var dif = "10x10";
   if (document.getElementById("20x20").className == "active"){
