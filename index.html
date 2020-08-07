@@ -1,0 +1,67 @@
+<!-- Anton Danylenko -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="static/css/main.css">
+    <link rel="shortcut icon" href="static/img/favicon.ico">
+    <title>iMinesweeper</title>
+  </head>
+  <body onload="generateMinesweeper(); placeField();">
+    <header>iMinesweeper</header>
+    <div class="navbar">
+      <div id="settings">
+        <a href="" onclick="return false;">
+          <img src="static/img/pause.svg" alt="Pause" onclick="checkPause()">
+        </a>
+        <div id="utensils">
+          <a class="active" id="flag" href="" onclick="return false;">
+            <img src="static/img/flag.png" alt="Flag" onclick="switchUtensil(0)">
+          </a>
+          <a id="mine" href="" onclick="return false;">
+            <img src="static/img/mine.png" alt="Sweep" onclick="switchUtensil(1)">
+          </a>
+        </div>
+      </div>
+      <div id="difficulty">
+        <ul>
+          <li><button class="active" id="10x10" onclick="insertPuzzle(0); difficulty(0);">10x10</button></li>
+          <li><button id="20x20" onclick="insertPuzzle(1); difficulty(1);">20x20</button></li>
+          <li><button id="50x50" onclick="insertPuzzle(2); difficulty(2);">50x50</button></li>
+        </ul>
+      </div>
+      <div id="mines_left">
+      </div>
+      <div id="time">
+        00:00:00
+      </div>
+    </div>
+    <div id="game" hidden></div>
+    <div class="board">
+      <canvas id="myCanvas" width="600" height="600"></canvas>
+    </div>
+    <div class="pauseMenu">
+      <h1>Game Paused</h1>
+      <p>Press the pause button again to resume the game</p>
+      <p>Place flags where you think bombs are</p>
+      <p>Sweep places you know have no bombs</p>
+    </div>
+
+    <div id="winAlert" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <center>
+          <h2>YOU WON!!!</h2>
+          <div id="finalTime">Time: 00:00:00</div>
+          <br>
+          <div id="finalDifficulty">Difficulty: 10x10</div>
+          <br>
+          <button id="newGame" onclick="newGame()">NEW GAME</button>
+        </center>
+      </div>
+    </div>
+    <script src="static/js/game.js"></script>
+    <script src="static/js/minesweeper.js"></script>
+  </body>
+</html>
