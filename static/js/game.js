@@ -401,7 +401,7 @@ function openModal(){
   // console.log(unlocked);
   document.getElementById("winAlert").style.display = "block";
   if (!win){
-    document.getElementById("heading").innerHTML = "You Lost :(";
+    document.getElementById("heading").innerHTML = "Git Gud Pam";
   }
   else {
     document.getElementById("heading").innerHTML = "YOU WON!!!";
