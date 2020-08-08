@@ -25,9 +25,12 @@
       </div>
       <div id="difficulty">
         <ul>
-          <li><button class="active" id="10x10" onclick="difficulty(0);">10x10</button></li>
-          <li><button id="20x20" onclick="difficulty(1);">20x20</button></li>
-          <li><button id="40x40" onclick="difficulty(2);">40x40</button></li>
+          <li><button class="active" id="ten" onclick="difficulty(10, 10);">10x10</button></li>
+          <li><button id="twenty" onclick="difficulty(20, 20);">20x20</button></li>
+          <li><button id="custom" onclick='difficulty(document.getElementById("custom_size_x").value, document.getElementById("custom_size_y").value)'>
+            <input type="text" id="custom_size_x" value="40"> x
+            <input type="text" id="custom_size_y" value="40">
+          </button></li>
         </ul>
       </div>
       <div id="mines_left">
@@ -37,7 +40,7 @@
         00:00:00
       </div>
     </div>
-    <div class="board">
+    <div class="board" id="board">
       <canvas id="myCanvas" width="600" height="600"></canvas>
     </div>
     <div class="pauseMenu">

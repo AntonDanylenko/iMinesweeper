@@ -80,12 +80,20 @@ header {
   border-right: 0px;
 }
 
+#ten, #twenty, #forty {
+  width: 80px;
+}
+
+#custom {
+  width: 100px;
+}
+
 #difficulty button {
   font-size: 14px;
   display: block;
   color: #000;
   text-align: center;
-  width: 80px;
+  /* width: 80px; */
   height: 100%;
   text-decoration: none;
   border: 1px solid grey;
@@ -102,6 +110,7 @@ header {
 }
 
 
+
 #time, #mines_left {
   border: 2px solid grey;
   padding: 8px 16px;
@@ -112,7 +121,12 @@ header {
 }
 
 #mines_left {
+  width: 30px;
   background-color: #FFCCCB;
+}
+
+#custom_size_x, #custom_size_y {
+  width: 18px;
 }
 
 .board {

@@ -7,12 +7,12 @@ var MINE_MAX = CELL_TOTAL/10;
 var field = new Array(0);
 
 //GENERATE MINESWEEPER
-function generateMinesweeper(dif, r, c){
+function generateMinesweeper(x, y, r, c){
   // console.log("r: " + r + ", c: " + c);
-  CELL_ROWS = 10*Math.pow(2,dif);
-  CELL_COLS = CELL_ROWS;
+  CELL_COLS = x;
+  CELL_ROWS = y;
   CELL_TOTAL = CELL_ROWS*CELL_COLS;
-  MINE_MAX = CELL_TOTAL/10;
+  MINE_MAX = Math.floor(CELL_TOTAL/10);
   // console.log("CELL INFO");
   // console.log(CELL_ROWS);
   // console.log(CELL_COLS);
@@ -28,14 +28,15 @@ function generateMinesweeper(dif, r, c){
     }
     field.push(temp);
   }
+  console.log(field);
 
   //PLACE MINES
   var mine = 0;
   while (mine<MINE_MAX){
     var random_cell = Math.floor(Math.random() * CELL_TOTAL);
     // console.log(random_cell);
-    var row = Math.floor(random_cell/CELL_ROWS);
-    var col = random_cell%CELL_ROWS;
+    var row = Math.floor(random_cell/CELL_COLS);
+    var col = random_cell%CELL_COLS;
     if (field[row][col] == 0 && !(row>r-2 && row<r+2 && col>c-2 && col<c+2)){
       // console.log("CHECKING");
       // console.log(row, r);

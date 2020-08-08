@@ -8,13 +8,10 @@ var context = canvas.getContext('2d');
 var CELL_ROWS = 10;
 var CELL_COLS = 10;
 var CELL_TOTAL = 100;
-var CELL_SIZE = context.canvas.width/CELL_COLS;
+var CELL_SIZE = 600/CELL_COLS;
 // console.log(CELL_SIZE);
 // canvas.width = CELL_SIZE * CELL_COLS;
 // console.log(context.canvas.width);
-
-//DIFFICULTY
-var dif = 0;
 
 //BOARD
 var board;
@@ -70,7 +67,7 @@ var num_colors = ["#0000FF", "#008000", "#FF0000", "#00008B", "#800020", "#00808
 //GENERATE GAME
 function generateGame(row, col){
   // console.log("row: " + row + ", col: " + col);
-  board = generateMinesweeper(dif, row, col);
+  board = generateMinesweeper(CELL_COLS, CELL_ROWS, row, col);
   // console.log("board");
   // console.log(board);
 }
@@ -78,10 +75,19 @@ function generateGame(row, col){
 
 //PLACE FIELD
 function placeField(){
-  CELL_ROWS = 10*Math.pow(2,dif);
-  CELL_COLS = CELL_ROWS;
   CELL_TOTAL = CELL_ROWS*CELL_COLS;
-  CELL_SIZE = context.canvas.width/CELL_COLS;
+  if (CELL_COLS>CELL_ROWS){
+    CELL_SIZE = Math.floor(600/CELL_COLS);
+  }
+  else {
+    CELL_SIZE = Math.floor(600/CELL_ROWS);
+  }
+  canvas.width = CELL_COLS*CELL_SIZE;
+  canvas.height = CELL_ROWS*CELL_SIZE;
+  document.getElementById("board").style.width = CELL_COLS*CELL_SIZE + 'px';
+  document.getElementById("board").style.height = CELL_ROWS*CELL_SIZE + 'px';
+  // console.log("Board width: " + document.getElementById("board").style.width);
+  // console.log("Board height: " + document.getElementById("board").style.height);
   num_mines = CELL_TOTAL/10;
 
   for (var row=0; row<CELL_ROWS; row++){
@@ -126,13 +132,30 @@ function placeField(){
 
 
 //CHANGE DIFFICULTY
-function difficulty(difficulty){
-  dif = difficulty;
-  var difs = ["10x10", "20x20", "40x40"];
-  for (var x=0; x<3; x++){
-    document.getElementById(difs[x]).className = "";
+function difficulty(x, y){
+  // console.log("x: " + x + ", y: " + y);
+  CELL_COLS = Math.floor(x);
+  CELL_ROWS = Math.floor(y);
+  var difs = ["ten", "twenty", "custom"];
+  for (var i=0; i<3; i++){
+    document.getElementById(difs[i]).className = "";
   }
-  document.getElementById(difs[dif]).className = "active";
+  if (x<10 || y<10 || x>50 || y>50){
+    // console.log("x: " + x + ", y: " + y);
+    alert("Board sizes should be between 10 and 50");
+    document.getElementById("ten").className = "active";
+    CELL_COLS = 10;
+    CELL_ROWS = 10;
+  }
+  else if (x==10 && y==10){
+    document.getElementById("ten").className = "active";
+  }
+  else if (x==20 && y==20){
+    document.getElementById("twenty").className = "active";
+  }
+  else {
+    document.getElementById("custom").className = "active";
+  }
 
   placeField();
   first_click = true;
@@ -171,7 +194,8 @@ document.addEventListener('click', function(event) {
     // console.log("INSIDE");
     var sectorX = findSectorX(mousePos[0], canvas.width);
     var sectorY = findSectorY(mousePos[1], canvas.height);
-    // console.log("selected: "+selected)
+    // console.log("canvas.width: " + canvas.width + ", canvas.height: " + canvas.height);
+    // console.log("cols: " + CELL_COLS + ", rows: " + CELL_ROWS);
     // console.log("sectorX: " + sectorX + ", sectorY: " + sectorY);
     var col = Math.floor(sectorX/CELL_SIZE);
     var row = Math.floor(sectorY/CELL_SIZE);
@@ -418,11 +442,11 @@ function openModal(){
   }
   document.getElementById("finalTime").innerHTML = "Time: " + displayTime(timer-1);
   var difficulty = "10x10";
-  if (document.getElementById("20x20").className == "active"){
+  if (document.getElementById("twenty").className == "active"){
     difficulty = "20x20";
   }
-  else if (document.getElementById("40x40").className == "active"){
-    difficulty = "40x40";
+  else if (document.getElementById("custom").className == "active"){
+    difficulty = "Custom";
   }
   document.getElementById("finalDifficulty").innerHTML = "Difficulty: " + difficulty;
 }
@@ -439,6 +463,6 @@ function closeModal(){
 function newGame(){
   // console.log("NEW GAME");
   // console.log(unlocked);
-  difficulty(dif);
+  difficulty(CELL_COLS, CELL_ROWS);
   checkPause();
 }
