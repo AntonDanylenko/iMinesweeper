@@ -66,6 +66,13 @@ var num_colors = ["#0000FF", "#008000", "#FF0000", "#00008B", "#800020", "#00808
 
 //GENERATE GAME
 function generateGame(row, col){
+  for (var r=0; r<CELL_ROWS; r++){
+    for (var c=0; c<CELL_COLS; c++){
+      if (working_board[r][c]=='F'){
+        removeFlag(r,c);
+      }
+    }
+  }
   // console.log("row: " + row + ", col: " + col);
   board = generateMinesweeper(CELL_COLS, CELL_ROWS, row, col);
   // console.log("board");
@@ -89,6 +96,7 @@ function placeField(){
   // console.log("Board width: " + document.getElementById("board").style.width);
   // console.log("Board height: " + document.getElementById("board").style.height);
   num_mines = CELL_TOTAL/10;
+  document.getElementById("mines_left").innerHTML = num_mines;
 
   for (var row=0; row<CELL_ROWS; row++){
     for (var col=0; col<CELL_COLS; col++){
@@ -105,7 +113,6 @@ function placeField(){
   game_over = false;
   boardRef.style.display = "block";
   document.querySelector(".pauseMenu").style.display = "none";
-  document.getElementById("mines_left").innerHTML = num_mines;
 
   working_board = new Array(0);
   for (var row=0; row<CELL_ROWS; row++){

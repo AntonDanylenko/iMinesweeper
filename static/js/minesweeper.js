@@ -28,7 +28,7 @@ function generateMinesweeper(x, y, r, c){
     }
     field.push(temp);
   }
-  console.log(field);
+  // console.log(field);
 
   //PLACE MINES
   var mine = 0;
