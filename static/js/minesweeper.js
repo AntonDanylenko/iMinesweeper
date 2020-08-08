@@ -7,7 +7,8 @@ var MINE_MAX = CELL_TOTAL/10;
 var field = new Array(0);
 
 //GENERATE MINESWEEPER
-function generateMinesweeper(dif){
+function generateMinesweeper(dif, r, c){
+  // console.log("r: " + r + ", c: " + c);
   CELL_ROWS = 10*Math.pow(2,dif);
   CELL_COLS = CELL_ROWS;
   CELL_TOTAL = CELL_ROWS*CELL_COLS;
@@ -35,7 +36,11 @@ function generateMinesweeper(dif){
     // console.log(random_cell);
     var row = Math.floor(random_cell/CELL_ROWS);
     var col = random_cell%CELL_ROWS;
-    if (field[row][col] == 0){
+    if (field[row][col] == 0 && !(row>r-2 && row<r+2 && col>c-2 && col<c+2)){
+      // console.log("CHECKING");
+      // console.log(row, r);
+      // console.log(col, c);
+      // console.log("-------");
       field[row][col] = 9;
       mine++;
     }
@@ -53,22 +58,7 @@ function generateMinesweeper(dif){
   //PRINT FIELD
   // console.log("FIELD");
   // console.log(field);
-
-
-
-  //CONVERT FIELD ARRAY TO STRING
-  var field_string = "";
-  for (var row=0; row<CELL_ROWS; row++){
-    var temp = "";
-    for (var col=0; col<CELL_COLS; col++){
-      temp+=field[row][col];
-      temp+=",";
-    }
-    field_string+=temp.slice(0,-1);
-    field_string+="/";
-  }
-  // console.log(field_string);
-  document.getElementById("game").innerHTML = field_string;
+  return field;
 }
 
 

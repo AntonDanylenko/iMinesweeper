@@ -13,6 +13,9 @@ var CELL_SIZE = context.canvas.width/CELL_COLS;
 // canvas.width = CELL_SIZE * CELL_COLS;
 // console.log(context.canvas.width);
 
+//DIFFICULTY
+var dif = 0;
+
 //BOARD
 var board;
 var working_board;
@@ -21,6 +24,7 @@ var working_board;
 var unlocked = true;
 var game_over = false;
 var win = false;
+var first_click = true;
 
 //TIMER
 var timer;
@@ -63,25 +67,23 @@ flag.src = flag_path;
 //NUMBER COLORS ARRAY
 var num_colors = ["#0000FF", "#008000", "#FF0000", "#00008B", "#800020", "#008080", "#000000", "#808080"];
 
+//GENERATE GAME
+function generateGame(row, col){
+  // console.log("row: " + row + ", col: " + col);
+  board = generateMinesweeper(dif, row, col);
+  // console.log("board");
+  // console.log(board);
+}
+
 
 //PLACE FIELD
 function placeField(){
-  var board_temp = document.getElementById("game").innerHTML.split("/");
-  board = new Array(0);
-  working_board = new Array(0);
-  for (var row=0; row<CELL_ROWS; row++){
-    board.push(board_temp[row].split(","));
-    var temp = [];
-    for (var col=0; col<CELL_COLS; col++){
-      temp.push('X');
-    }
-    working_board.push(temp);
-  }
-  // console.log("board");
-  // console.log(board);
-  // console.log(working_board);
+  CELL_ROWS = 10*Math.pow(2,dif);
+  CELL_COLS = CELL_ROWS;
+  CELL_TOTAL = CELL_ROWS*CELL_COLS;
+  CELL_SIZE = context.canvas.width/CELL_COLS;
+  num_mines = CELL_TOTAL/10;
 
-  //Draw the covered field.
   for (var row=0; row<CELL_ROWS; row++){
     for (var col=0; col<CELL_COLS; col++){
       context.drawImage(tile, col*CELL_SIZE, row*CELL_SIZE, CELL_SIZE, CELL_SIZE);
@@ -97,7 +99,16 @@ function placeField(){
   game_over = false;
   boardRef.style.display = "block";
   document.querySelector(".pauseMenu").style.display = "none";
+  document.getElementById("mines_left").innerHTML = num_mines;
 
+  working_board = new Array(0);
+  for (var row=0; row<CELL_ROWS; row++){
+    var temp = [];
+    for (var col=0; col<CELL_COLS; col++){
+      temp.push('X');
+    }
+    working_board.push(temp);
+  }
   //Draw the mines and numbers.
   // for (var row=0; row<CELL_ROWS; row++){
   //   for (var col=0; col<CELL_COLS; col++){
@@ -115,22 +126,16 @@ function placeField(){
 
 
 //CHANGE DIFFICULTY
-function difficulty(dif){
+function difficulty(difficulty){
+  dif = difficulty;
   var difs = ["10x10", "20x20", "40x40"];
   for (var x=0; x<3; x++){
     document.getElementById(difs[x]).className = "";
   }
   document.getElementById(difs[dif]).className = "active";
 
-  CELL_ROWS = 10*Math.pow(2,dif);
-  CELL_COLS = CELL_ROWS;
-  CELL_TOTAL = CELL_ROWS*CELL_COLS;
-  CELL_SIZE = context.canvas.width/CELL_COLS;
-  num_mines = CELL_TOTAL/10;
-  // console.log("CELL INFO");
-  // console.log(CELL_ROWS);
-  // console.log(CELL_SIZE);
   placeField();
+  first_click = true;
   // checkPause();
 }
 
@@ -172,6 +177,11 @@ document.addEventListener('click', function(event) {
     var row = Math.floor(sectorY/CELL_SIZE);
     // console.log("col: " + col + ", row: " + row);
     if (utensil){
+      if (first_click){
+        // console.log("row: " + row + ", col: " + col);
+        generateGame(row, col);
+        first_click = false;
+      }
       if (working_board[row][col] == 'X'){
         if (board[row][col] != "9"){
           // console.log("OPEN AREA");
@@ -407,14 +417,14 @@ function openModal(){
     document.getElementById("heading").innerHTML = "YOU WON!!!";
   }
   document.getElementById("finalTime").innerHTML = "Time: " + displayTime(timer-1);
-  var dif = "10x10";
+  var difficulty = "10x10";
   if (document.getElementById("20x20").className == "active"){
-    dif = "20x20";
+    difficulty = "20x20";
   }
   else if (document.getElementById("40x40").className == "active"){
-    dif = "40x40";
+    difficulty = "40x40";
   }
-  document.getElementById("finalDifficulty").innerHTML = "Difficulty: " + dif;
+  document.getElementById("finalDifficulty").innerHTML = "Difficulty: " + difficulty;
 }
 
 
@@ -429,14 +439,6 @@ function closeModal(){
 function newGame(){
   // console.log("NEW GAME");
   // console.log(unlocked);
-  var dif = 0;
-  if (document.getElementById("20x20").className == "active"){
-    dif = 1;
-  }
-  else if (document.getElementById("40x40").className == "active"){
-    dif = 2;
-  }
-  generateMinesweeper(dif);
   difficulty(dif);
   checkPause();
 }
