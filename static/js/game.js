@@ -83,11 +83,28 @@ function generateGame(row, col){
 //PLACE FIELD
 function placeField(){
   CELL_TOTAL = CELL_ROWS*CELL_COLS;
-  if (CELL_COLS>CELL_ROWS){
-    CELL_SIZE = Math.floor(600/CELL_COLS);
+  var threshold = 600;
+  if (window.innerWidth>1200 && window.innerHeight>1400){
+    threshold = window.innerWidth/2;
+    if (window.innerWidth>window.innerHeight-200){
+      threshold = window.innerHeight/2;
+    }
+  }
+  if (window.innerWidth>threshold && window.innerHeight>800){
+    if (CELL_COLS>CELL_ROWS){
+      CELL_SIZE = Math.floor(threshold/CELL_COLS);
+    }
+    else {
+      CELL_SIZE = Math.floor(threshold/CELL_ROWS);
+    }
   }
   else {
-    CELL_SIZE = Math.floor(600/CELL_ROWS);
+    if (window.innerWidth<window.innerHeight-200){
+      CELL_SIZE = Math.floor(window.innerWidth/CELL_COLS);
+    }
+    else {
+      CELL_SIZE = Math.floor((window.innerHeight-200)/CELL_ROWS);
+    }
   }
   canvas.width = CELL_COLS*CELL_SIZE;
   canvas.height = CELL_ROWS*CELL_SIZE;
