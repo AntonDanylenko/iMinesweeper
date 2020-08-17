@@ -9,9 +9,6 @@ var CELL_ROWS = 10;
 var CELL_COLS = 10;
 var CELL_TOTAL = 100;
 var CELL_SIZE = 600/CELL_COLS;
-// console.log(CELL_SIZE);
-// canvas.width = CELL_SIZE * CELL_COLS;
-// console.log(context.canvas.width);
 
 //BOARD
 var board;
@@ -22,6 +19,11 @@ var unlocked = true;
 var game_over = false;
 var win = false;
 var first_click = true;
+
+//SHIFT AND LONG CLICK
+var shift_down = false;
+var click_t;
+var click_time = -1;
 
 //TIMER
 var timer;
@@ -73,10 +75,7 @@ function generateGame(row, col){
       }
     }
   }
-  // console.log("row: " + row + ", col: " + col);
   board = generateMinesweeper(CELL_COLS, CELL_ROWS, row, col);
-  // console.log("board");
-  // console.log(board);
 }
 
 
@@ -110,8 +109,6 @@ function placeField(){
   canvas.height = CELL_ROWS*CELL_SIZE;
   document.getElementById("board").style.width = CELL_COLS*CELL_SIZE + 'px';
   document.getElementById("board").style.height = CELL_ROWS*CELL_SIZE + 'px';
-  // console.log("Board width: " + document.getElementById("board").style.width);
-  // console.log("Board height: " + document.getElementById("board").style.height);
   num_mines = Math.floor(CELL_TOTAL/10);
   document.getElementById("mines_left").innerHTML = num_mines;
 
@@ -139,25 +136,11 @@ function placeField(){
     }
     working_board.push(temp);
   }
-  //Draw the mines and numbers.
-  // for (var row=0; row<CELL_ROWS; row++){
-  //   for (var col=0; col<CELL_COLS; col++){
-  //     if (board[row][col]=="9"){
-  //       context.drawImage(mine, col*CELL_SIZE, row*CELL_SIZE, CELL_SIZE, CELL_SIZE);
-  //     }
-  //     else if (board[row][col]!="0"){
-  //       context.font = Math.floor(CELL_SIZE*.66) + "px Arial";
-  //       context.fillStyle = num_colors[parseInt(board[row][col],10)-1];
-  //       context.fillText(board[row][col], (col+.3)*CELL_SIZE, (row+.75)*CELL_SIZE);
-  //     }
-  //   }
-  // }
 }
 
 
 //CHANGE DIFFICULTY
 function difficulty(x, y){
-  // console.log("x: " + x + ", y: " + y);
   CELL_COLS = Math.floor(x);
   CELL_ROWS = Math.floor(y);
   var difs = ["ten", "twenty", "custom"];
@@ -165,7 +148,6 @@ function difficulty(x, y){
     document.getElementById(difs[i]).className = "";
   }
   if (x<10 || y<10 || x>50 || y>50){
-    // console.log("x: " + x + ", y: " + y);
     alert("Board sizes should be between 10 and 50");
     document.getElementById("ten").className = "active";
     CELL_COLS = 10;
@@ -183,75 +165,78 @@ function difficulty(x, y){
 
   placeField();
   first_click = true;
-  // checkPause();
 }
 
 
 //KEY PRESS EVENT LISTENER
 document.addEventListener('keydown', function(event) {
-  // console.log"KEYPRESS EVENT");
   key = event.keyCode;
-  // console.log("Key: " + key);
   if (key==32){
-    // console.log("!utensil: " + !utensil);
     switchUtensil(!utensil);
   }
-  else if (key==27) {
+  else if (key==27){
     checkPause();
+  }
+  else if (key==16){
+    shift_down = true;
   }
 }, false);
 
+//SHIFT LIFTED LISTENER
+document.addEventListener('keyup', function(event) {
+  key = event.keyCode;
+  if (key==16){
+    shift_down = false;
+  }
+}, false);
 
-//CLICK EVENT LISTENER
-document.addEventListener('click', function(event) {
+//MOUSE UP EVENT LISTENER
+document.addEventListener('mouseup', function(event) {
   /* Determines what to do when user clicks inside the board */
-  // console.log("CLICK EVENT");
+  clearTimeout(click_t);
   var rect = canvas.getBoundingClientRect(canvas, event);
-  // console.log(event.clientX);
-  // console.log(event.clientY);
   var mousePos = [event.clientX - rect.left, event.clientY - rect.top];
-  // console.log(mousePos);
-  // console.log(unlocked);
   if (mousePos[0]>=0 && mousePos[1]>=0 &&
       mousePos[0]<=canvas.width && mousePos[1]<=canvas.height &&
       unlocked && !game_over){
-    // console.log("INSIDE");
     var sectorX = findSectorX(mousePos[0], canvas.width);
     var sectorY = findSectorY(mousePos[1], canvas.height);
-    // console.log("canvas.width: " + canvas.width + ", canvas.height: " + canvas.height);
-    // console.log("cols: " + CELL_COLS + ", rows: " + CELL_ROWS);
-    // console.log("sectorX: " + sectorX + ", sectorY: " + sectorY);
     var col = Math.floor(sectorX/CELL_SIZE);
     var row = Math.floor(sectorY/CELL_SIZE);
-    // console.log("col: " + col + ", row: " + row);
-    if (utensil){
-      if (first_click){
-        // console.log("row: " + row + ", col: " + col);
-        generateGame(row, col);
-        first_click = false;
-      }
-      if (working_board[row][col] == 'X'){
-        if (board[row][col] != "9"){
-          // console.log("OPEN AREA");
-          openArea(row, col);
-        }
-        else {
-          // console.log("OPEN MINES");
-          openMines(row, col);
-        }
-      }
+    if ((shift_down || click_time) && working_board[row][col] == '_' && board[row][col]!="0"){
+      openNumbers(row, col);
     }
     else {
-      if (working_board[row][col] == 'X'){
-        // console.log("PLACE FLAG");
-        placeFlag(row, col);
+      if (utensil){
+        if (first_click){
+          generateGame(row, col);
+          first_click = false;
+        }
+        if (working_board[row][col] == 'X'){
+          if (board[row][col] != "9"){
+            openArea(row, col);
+          }
+          else {
+            openMines(row, col);
+          }
+        }
       }
-      else if (working_board[row][col] == 'F'){
-        // console.log("REMOVE FLAG");
-        removeFlag(row, col);
+      else {
+        if (working_board[row][col] == 'X'){
+          placeFlag(row, col);
+        }
+        else if (working_board[row][col] == 'F'){
+          removeFlag(row, col);
+        }
       }
     }
   }
+  click_time = -1;
+}, false);
+
+//START CLICK TIMER
+document.addEventListener('mousedown', function(event) {
+  changeClickTimer();
 }, false);
 
 
@@ -261,7 +246,6 @@ function openArea(row, col){
     return;
   }
   working_board[row][col] = '_';
-  // console.log("col: " + col + ", row: " + row);
   context.drawImage(open_tile, col*CELL_SIZE, row*CELL_SIZE, CELL_SIZE, CELL_SIZE);
   if (board[row][col]!="0"){
     context.font = Math.floor(CELL_SIZE*.66) + "px Arial";
@@ -290,6 +274,40 @@ function openArea(row, col){
       }
       openArea(row+1, col);
       if (col<CELL_COLS-1){
+        openArea(row+1, col+1);
+      }
+    }
+  }
+}
+
+//OPEN AREA FOR KNOWN NUMBER
+function openNumbers(row, col){
+  if (board[row][col] == numFlaggedBombsIn3x3Area(row, col)){
+    if (row>0){
+      if (col>0 && board[row-1][col-1]!="9"){
+        openArea(row-1, col-1);
+      }
+      if (board[row-1][col]!="9"){
+        openArea(row-1, col);
+      }
+      if (col<CELL_COLS-1 && board[row-1][col+1]!="9"){
+        openArea(row-1, col+1);
+      }
+    }
+    if (col>0 && board[row][col-1]!="9"){
+      openArea(row, col-1);
+    }
+    if (col<CELL_COLS-1 && board[row][col+1]!="9"){
+      openArea(row, col+1);
+    }
+    if (row<CELL_ROWS-1){
+      if (col>0 && board[row+1][col-1]!="9"){
+        openArea(row+1, col-1);
+      }
+      if (board[row+1][col]!="9"){
+        openArea(row+1, col);
+      }
+      if (col<CELL_COLS-1 && board[row+1][col+1]!="9"){
         openArea(row+1, col+1);
       }
     }
@@ -349,12 +367,10 @@ function removeFlag(row, col){
 //FIND SECTOR
 function findSectorX(coord, total) {
   /* Determines which square the coordinate belongs too */
-  // console.log("FIND SECTOR");
   return Math.floor(coord*CELL_COLS/total)*(total/CELL_COLS);
 }
 function findSectorY(coord, total) {
   /* Determines which square the coordinate belongs too */
-  // console.log("FIND SECTOR");
   return Math.floor(coord*CELL_ROWS/total)*(total/CELL_ROWS);
 }
 
@@ -384,6 +400,12 @@ function gameOver(){
 }
 
 
+//INCREMENT CLICK TIME
+function changeClickTimer(){
+  click_t = setTimeout(function(){ changeClickTimer() }, 300);
+  click_time = click_time + 1;
+}
+
 //INCREMENT TIME
 function changeTimer(){
   document.getElementById("time").innerHTML = displayTime(timer);
@@ -399,8 +421,12 @@ function displayTime(calcTime){
   calcTime = calcTime % 60;
   var seconds = Math.floor(calcTime);
 
-  seconds = addZeros(seconds);
-  minutes = addZeros(minutes);
+  if(seconds < 10){
+    seconds = "0" + seconds;
+  }
+  if(minutes < 10){
+    minutes = "0" + minutes;
+  }
 
   return `${hours}:${minutes}:${seconds}`
 }
@@ -419,7 +445,6 @@ function pauseTimer(){
 
 //OPEN PAUSE MENU
 function checkPause(){
-  // console.log("game_over: " + game_over);
   if (!game_over){
     if(timer_active){
       unlocked = false;
@@ -444,14 +469,6 @@ function checkPause(){
   }
 }
 
-//ADD ZEROS TO TIME
-function addZeros(i){
-  if(i < 10){
-    i = "0" + i;
-  }
-  return i;
-}
-
 
 //OPEN MODAL
 function openModal(){
@@ -467,7 +484,6 @@ function openModal(){
   document.getElementById("finalTime").innerHTML = "Time: " + displayTime(timer-1);
   document.getElementById("finalDifficulty").innerHTML = "Difficulty: " + CELL_COLS + "x" + CELL_ROWS;
 }
-
 
 //CLOSE MODAL
 function closeModal(){
@@ -485,6 +501,7 @@ function newGame(){
   checkPause();
 }
 
+
 //HOW TO PLAY BUTTON
 function toggle_how_to(){
   var how = document.getElementById("how_to");
@@ -493,4 +510,41 @@ function toggle_how_to(){
   } else {
     how.style.display = "none";
   }
+}
+
+
+//COUNT NUMBER OF FLAGGED BOMBS
+function numFlaggedBombsIn3x3Area(row, col){
+  // console.log("ROW: " + row);
+  // console.log("COL: " + col);
+  var num = 0;
+  if (row>0){
+    if (col>0 && board[row-1][col-1] == "9" && working_board[row-1][col-1] == 'F'){
+      num++;
+    }
+    if (board[row-1][col] == "9" && working_board[row-1][col] == 'F'){
+      num++;
+    }
+    if (col<CELL_COLS-1 && board[row-1][col+1] == "9" && working_board[row-1][col+1] == 'F'){
+      num++;
+    }
+  }
+  if (col>0 && board[row][col-1] == "9" && working_board[row][col-1] == 'F'){
+    num++;
+  }
+  if (col<CELL_COLS-1 && board[row][col+1] == "9" && working_board[row][col+1] == 'F'){
+    num++;
+  }
+  if (row<CELL_ROWS-1){
+    if (col>0 && board[row+1][col-1] == "9" && working_board[row+1][col-1] == 'F'){
+      num++;
+    }
+    if (board[row+1][col] == "9" && working_board[row+1][col] == 'F'){
+      num++;
+    }
+    if (col<CELL_COLS-1 && board[row+1][col+1] == "9" && working_board[row+1][col+1] == 'F'){
+      num++;
+    }
+  }
+  return num;
 }
