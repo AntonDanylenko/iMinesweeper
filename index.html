@@ -15,10 +15,10 @@
           <img src="static/img/pause.svg" alt="Pause" onclick="checkPause()">
         </a>
         <div id="utensils">
-          <a class="active" id="flag" href="" onclick="return false;">
+          <a id="flag" href="" onclick="return false;">
             <img src="static/img/flag.png" alt="Flag" onclick="switchUtensil(0)">
           </a>
-          <a id="sweep" href="" onclick="return false;">
+          <a class="active" id="sweep" href="" onclick="return false;">
             <img src="static/img/mine.png" alt="Sweep" onclick="switchUtensil(1)">
           </a>
         </div>
@@ -28,7 +28,7 @@
           <li><button class="active" id="ten" onclick="difficulty(10, 10);">10x10</button></li>
           <li><button id="twenty" onclick="difficulty(20, 20);">20x20</button></li>
           <li><button id="custom" onclick='difficulty(document.getElementById("custom_size_x").value, document.getElementById("custom_size_y").value)'>
-            <input type="text" id="custom_size_x" value="40"> x 
+            <input type="text" id="custom_size_x" value="40"> x
             <input type="text" id="custom_size_y" value="40">
           </button></li>
         </ul>
@@ -45,12 +45,15 @@
     </div>
     <div class="pauseMenu">
       <h1>Game Paused</h1>
-      <p>Press the pause button again to resume the game</p>
-      <p>Place flags where you think bombs are</p>
-      <p>Sweep places you know have no bombs</p>
-      <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-      <p>You can press ESC key to pause and unpause<p>
-      <p>You can press SPACE key to switch between flag and sweep<p>
+      <p>Press the pause button or ESC key to resume the game</p>
+      <button id="how_to_button" onclick="toggle_how_to()">How To Play</button>
+      <p id="how_to" style="display: none;">
+        The purpose of the game is to flag all the cells on the board which you know have mines.
+        You lose if you set off a mine cell.
+        Every non-mine cell you open will tell you the total number of mines in the eight neighboring cells.
+        Once you are sure that a cell contains a mine, press SPACE to switch to the flag and flag it.
+        Once you have flagged all the mines around an open cell, you can quickly open the remaining non-mine cells by long-pressing on the cell.
+      </p>
     </div>
 
     <div id="winAlert" class="modal">

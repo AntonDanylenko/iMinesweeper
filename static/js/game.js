@@ -31,7 +31,7 @@ var boardRef = document.querySelector(".board");
 var pauseRef = document.querySelector(".pauseMenu");
 
 //UTENSIL
-var utensil = 0;
+var utensil = 1;
 
 //MINES COUNT
 var num_mines = Math.floor(CELL_TOTAL/10);
@@ -481,5 +481,16 @@ function newGame(){
   // console.log("NEW GAME");
   // console.log(unlocked);
   difficulty(CELL_COLS, CELL_ROWS);
+  switchUtensil(1);
   checkPause();
+}
+
+//HOW TO PLAY BUTTON
+function toggle_how_to(){
+  var how = document.getElementById("how_to");
+  if (how.style.display == "none") {
+    how.style.display = "block";
+  } else {
+    how.style.display = "none";
+  }
 }
