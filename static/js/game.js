@@ -190,8 +190,11 @@ document.addEventListener('keyup', function(event) {
   }
 }, false);
 
-//MOUSE UP EVENT LISTENER
-document.addEventListener('mouseup', function(event) {
+//MOUSE UP AND TOUCH END EVENT LISTENERS
+document.addEventListener('mouseup', clickEnd, false);
+document.addEventListener('touchend', clickEnd, false);
+
+function clickEnd(event) {
   /* Determines what to do when user clicks inside the board */
   clearTimeout(click_t);
   var rect = canvas.getBoundingClientRect(canvas, event);
@@ -232,12 +235,15 @@ document.addEventListener('mouseup', function(event) {
     }
   }
   click_time = -1;
-}, false);
+}
 
 //START CLICK TIMER
-document.addEventListener('mousedown', function(event) {
+document.addEventListener('mousedown', clickStart, false);
+document.addEventListener('touchstart', clickStart, false);
+
+function clickStart(event) {
   changeClickTimer();
-}, false);
+}
 
 
 //OPEN AREA OF BOARD
