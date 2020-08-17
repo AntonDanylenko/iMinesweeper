@@ -459,20 +459,13 @@ function openModal(){
   // console.log(unlocked);
   document.getElementById("winAlert").style.display = "block";
   if (!win){
-    document.getElementById("heading").innerHTML = "Git Gud Pam";
+    document.getElementById("heading").innerHTML = "Better luck next time!";
   }
   else {
     document.getElementById("heading").innerHTML = "YOU WON!!!";
   }
   document.getElementById("finalTime").innerHTML = "Time: " + displayTime(timer-1);
-  var difficulty = "10x10";
-  if (document.getElementById("twenty").className == "active"){
-    difficulty = "20x20";
-  }
-  else if (document.getElementById("custom").className == "active"){
-    difficulty = "Custom";
-  }
-  document.getElementById("finalDifficulty").innerHTML = "Difficulty: " + difficulty;
+  document.getElementById("finalDifficulty").innerHTML = "Difficulty: " + CELL_COLS + "x" + CELL_ROWS;
 }
 
 
