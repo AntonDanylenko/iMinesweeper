@@ -199,3 +199,11 @@ header {
   background-color: #4CAF50;
   color: white;
 }
+
+.mobile {
+  color: #00FF00;
+}
+
+.desktop {
+  color: #24B9FF;
+}
