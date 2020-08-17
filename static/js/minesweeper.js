@@ -3,7 +3,7 @@
 var CELL_ROWS = 10;
 var CELL_COLS = 10;
 var CELL_TOTAL = 100;
-var MINE_MAX = CELL_TOTAL/10;
+var MINE_MAX = Math.floor(CELL_TOTAL/10);
 var field = new Array(0);
 
 //GENERATE MINESWEEPER

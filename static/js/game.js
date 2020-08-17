@@ -34,7 +34,7 @@ var pauseRef = document.querySelector(".pauseMenu");
 var utensil = 0;
 
 //MINES COUNT
-var num_mines = CELL_TOTAL/10;
+var num_mines = Math.floor(CELL_TOTAL/10);
 
 //TILE ICON
 var tile_path = 'static/img/tile.png';
@@ -112,7 +112,7 @@ function placeField(){
   document.getElementById("board").style.height = CELL_ROWS*CELL_SIZE + 'px';
   // console.log("Board width: " + document.getElementById("board").style.width);
   // console.log("Board height: " + document.getElementById("board").style.height);
-  num_mines = CELL_TOTAL/10;
+  num_mines = Math.floor(CELL_TOTAL/10);
   document.getElementById("mines_left").innerHTML = num_mines;
 
   for (var row=0; row<CELL_ROWS; row++){
